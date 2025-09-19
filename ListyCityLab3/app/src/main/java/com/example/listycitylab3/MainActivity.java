@@ -23,6 +23,15 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.A
         cityAdapter.notifyDataSetChanged();
     }
 
+    @Override  //Replace old city with details of new one only if old one is present in the list.
+    public void editCity(City oldCity, City newCity) {
+        int position = dataList.indexOf(oldCity);
+        if (position != -1) {
+            dataList.set(position, newCity);
+            cityAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +48,14 @@ public class MainActivity extends AppCompatActivity implements AddCityFragment.A
         cityList = findViewById(R.id.city_list);
         cityAdapter = new CityArrayAdapter(this, dataList);
         cityList.setAdapter(cityAdapter);
+
+        //Setting up selected city listing to be edited.
+        cityList.setOnItemClickListener((parent, view, position, id) -> {
+            City selectedCity = dataList.get(position);
+            AddCityFragment fragment = new AddCityFragment();
+            fragment.setCityToEdit(selectedCity);
+            fragment.show(getSupportFragmentManager(), "Edit City");
+        });
 
         FloatingActionButton fab = findViewById(R.id.button_add_city);
         fab.setOnClickListener(v -> {
